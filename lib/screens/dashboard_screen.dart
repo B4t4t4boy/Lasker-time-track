@@ -51,15 +51,17 @@ class DashboardScreen extends StatelessWidget {
     final taskProvider = context.watch<TaskProvider>();
 
     return Scaffold(
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(40),
+        child: WindowCaption(
+          title: Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
+          brightness: Brightness.light,
+          backgroundColor: Colors.white,
+        ),
+      ),
       backgroundColor: Colors.grey.shade100,
       body: Column(
         children: [
-          // Elegant Native Integrated Window Title Bar
-          const WindowCaption(
-            title: Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
-            brightness: Brightness.light,
-            backgroundColor: Colors.white,
-          ),
           Expanded(
             child: taskProvider.tasks.isEmpty
                 ? const Center(
