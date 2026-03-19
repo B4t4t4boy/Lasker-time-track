@@ -89,6 +89,30 @@ class TaskButton extends StatelessWidget {
     );
   }
 
+  void _confirmReset(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Timer'),
+        content: const Text('Are you sure you want to reset the timer to 00:00:00?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.read<TaskProvider>().resetTaskTimer(task.id);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -154,6 +178,8 @@ class TaskButton extends StatelessWidget {
                 onSelected: (value) {
                   if (value == 'rename') {
                     _showRenameDialog(context);
+                  } else if (value == 'reset') {
+                    _confirmReset(context);
                   } else if (value == 'delete') {
                     _confirmDelete(context);
                   }
@@ -166,6 +192,16 @@ class TaskButton extends StatelessWidget {
                         Icon(Icons.edit, size: 20, color: Colors.black87),
                         SizedBox(width: 8),
                         Text('Rename'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'reset',
+                    child: Row(
+                      children: [
+                        Icon(Icons.refresh, size: 20, color: Colors.orange),
+                        SizedBox(width: 8),
+                        Text('Reset Timer'),
                       ],
                     ),
                   ),

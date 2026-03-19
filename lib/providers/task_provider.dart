@@ -68,6 +68,15 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetTaskTimer(String id) {
+    final taskIndex = _tasks.indexWhere((t) => t.id == id);
+    if (taskIndex != -1) {
+      _tasks[taskIndex].trackedSeconds = 0;
+      _saveTasks();
+      notifyListeners();
+    }
+  }
+
   Future<void> _saveTasks() async {
     final prefs = await SharedPreferences.getInstance();
     final tasksJson = _tasks.map((t) => t.toJson()).toList();
