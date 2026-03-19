@@ -88,7 +88,7 @@ class DashboardScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 250.0), // Safely push FAB above calendar
+        padding: const EdgeInsets.only(bottom: 390.0), // Safely push FAB above the 2-tier calendar
         child: FloatingActionButton.extended(
           onPressed: () => _showAddTaskDialog(context),
           icon: const Icon(Icons.add),

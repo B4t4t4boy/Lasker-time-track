@@ -21,7 +21,7 @@ class CalendarView extends StatelessWidget {
   String _formatDate(DateTime date) {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return "${days[date.weekday - 1]}, ${months[date.month - 1]} ${date.day}";
+    return "${days[date.weekday - 1]}\n${date.day} ${months[date.month - 1]}";
   }
 
   @override
@@ -31,10 +31,12 @@ class CalendarView extends StatelessWidget {
 
     final now = DateTime.now();
     final String todayDateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-    final List<DateTime> twoWeeks = List.generate(14, (i) => now.subtract(Duration(days: i)));
+    
+    // Generate 14 days chronologically (Oldest first, today last)
+    final List<DateTime> twoWeeks = List.generate(14, (i) => now.subtract(Duration(days: 13 - i)));
 
     return Container(
-      height: 240,
+      height: 380, // Expanded height strictly structured for 2 perfect geometric lines
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -46,91 +48,114 @@ class CalendarView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
-            child: Text(
-              'Activity Calendar (Last 14 Days)',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  '14-Day Calendar Log',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                ),
+                Text(
+                  'Snapshotting Cumulative Task Timers',
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade500, fontStyle: FontStyle.italic),
+                )
+              ],
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: twoWeeks.length,
-              itemBuilder: (context, index) {
-                final date = twoWeeks[index];
-                final dateStr = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-                
-                final loggedTasks = tasks.where((t) => (t.dailyLogs[dateStr] ?? 0) > 0).toList();
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 7, // Locks it down horizontally to precisely 7 days
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      // Dynamically resolves strict geometric proportions mapping layout height perfectly fitting exactly 2 rows
+                      childAspectRatio: (constraints.maxWidth / 7) / ((constraints.maxHeight - 8) / 2),
+                    ),
+                    itemCount: 14,
+                    itemBuilder: (context, index) {
+                      final date = twoWeeks[index];
+                      final dateStr = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+                      
+                      final loggedTasks = tasks.where((t) => (t.dailyLogs[dateStr] ?? 0) > 0).toList();
 
-                return Container(
-                  width: 170,
-                  margin: const EdgeInsets.fromLTRB(12, 8, 4, 16),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(16),
-                    border: dateStr == todayDateStr
-                        ? Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 2)
-                        : Border.all(color: Colors.grey.shade200, width: 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        dateStr == todayDateStr ? "Today" : _formatDate(date),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: dateStr == todayDateStr ? Colors.blueAccent : Colors.black87,
+                      return Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: dateStr == todayDateStr
+                              ? Border.all(color: Colors.blueAccent.withOpacity(0.6), width: 2)
+                              : Border.all(color: Colors.grey.shade300, width: 1),
                         ),
-                      ),
-                      const Divider(),
-                      if (loggedTasks.isEmpty)
-                        const Expanded(
-                          child: Center(
-                            child: Text(
-                              "No activity", 
-                              style: TextStyle(color: Colors.grey, fontSize: 13, fontStyle: FontStyle.italic)
-                            )
-                          ),
-                        )
-                      else
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: loggedTasks.length,
-                            itemBuilder: (context, i) {
-                              final task = loggedTasks[i];
-                              final seconds = task.dailyLogs[dateStr]!;
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        task.name,
-                                        style: const TextStyle(fontSize: 12, color: Colors.black87),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      _formatDuration(seconds),
-                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green.shade700),
-                                    ),
-                                  ],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              dateStr == todayDateStr ? "Today" : _formatDate(date),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                height: 1.2,
+                                color: dateStr == todayDateStr ? Colors.blueAccent : Colors.black87,
+                              ),
+                            ),
+                            const Divider(height: 12),
+                            if (loggedTasks.isEmpty)
+                              const Expanded(
+                                child: Center(
+                                  child: Text(
+                                    "-", 
+                                    style: TextStyle(color: Colors.grey, fontSize: 12)
+                                  )
                                 ),
-                              );
-                            },
-                          ),
+                              )
+                            else
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: loggedTasks.length,
+                                  itemBuilder: (context, i) {
+                                    final task = loggedTasks[i];
+                                    final seconds = task.dailyLogs[dateStr]!;
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              task.name,
+                                              style: const TextStyle(fontSize: 11, color: Colors.black87),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            _formatDuration(seconds),
+                                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade700),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-                );
-              },
+                      );
+                    },
+                  );
+                }
+              ),
             ),
           ),
+          const SizedBox(height: 8),
         ],
       ),
     );
