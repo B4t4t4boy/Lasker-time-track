@@ -39,10 +39,10 @@ class CalendarView extends StatelessWidget {
       height: 380, // Expanded height strictly structured for 2 perfect geometric lines
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade300, width: 1)),
+        color: const Color(0xFF31363b), // KDE Surface
+        border: const Border(top: BorderSide(color: Color(0xFF1b1e20), width: 1)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))
+          BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, -5))
         ]
       ),
       child: Column(
@@ -55,11 +55,11 @@ class CalendarView extends StatelessWidget {
               children: [
                 const Text(
                   '14-Day Calendar Log',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFeff0f1)),
                 ),
                 Text(
                   'Snapshotting Cumulative Task Timers',
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade500, fontStyle: FontStyle.italic),
+                  style: TextStyle(fontSize: 13, color: Color(0xFFbdc3c7), fontStyle: FontStyle.italic),
                 )
               ],
             ),
@@ -88,11 +88,11 @@ class CalendarView extends StatelessWidget {
                       return Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.blueGrey.shade50,
+                          color: const Color(0xFF232629), // KDE Background
                           borderRadius: BorderRadius.circular(12),
                           border: dateStr == todayDateStr
-                              ? Border.all(color: Colors.blueAccent.withOpacity(0.6), width: 2)
-                              : Border.all(color: Colors.grey.shade300, width: 1),
+                              ? Border.all(color: const Color(0xFF3daee9), width: 2) // KDE Accent Blue
+                              : Border.all(color: const Color(0xFF1b1e20), width: 1),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,16 +103,16 @@ class CalendarView extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
                                 height: 1.2,
-                                color: dateStr == todayDateStr ? Colors.blueAccent : Colors.black87,
+                                color: dateStr == todayDateStr ? const Color(0xFF3daee9) : const Color(0xFFeff0f1),
                               ),
                             ),
-                            const Divider(height: 12),
+                            const Divider(height: 12, color: Color(0xFF31363b)),
                             if (loggedTasks.isEmpty)
                               const Expanded(
                                 child: Center(
                                   child: Text(
                                     "-", 
-                                    style: TextStyle(color: Colors.grey, fontSize: 12)
+                                    style: TextStyle(color: Color(0xFFbdc3c7), fontSize: 12)
                                   )
                                 ),
                               )
@@ -131,14 +131,14 @@ class CalendarView extends StatelessWidget {
                                           Expanded(
                                             child: Text(
                                               task.name,
-                                              style: const TextStyle(fontSize: 11, color: Colors.black87),
+                                              style: const TextStyle(fontSize: 11, color: Color(0xFFeff0f1)),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
                                             _formatDuration(seconds),
-                                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade700),
+                                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade400),
                                           ),
                                         ],
                                       ),

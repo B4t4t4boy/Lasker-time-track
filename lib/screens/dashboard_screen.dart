@@ -54,12 +54,12 @@ class DashboardScreen extends StatelessWidget {
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(40),
         child: WindowCaption(
-          title: Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
-          brightness: Brightness.light,
-          backgroundColor: Colors.white,
+          title: Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFFeff0f1))),
+          brightness: Brightness.dark,
+          backgroundColor: Color(0xFF232629),
         ),
       ),
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: const Color(0xFF232629),
       body: Column(
         children: [
           Expanded(
@@ -94,6 +94,8 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 390.0), // Safely push FAB above the 2-tier calendar
         child: FloatingActionButton.extended(
           onPressed: () => _showAddTaskDialog(context),
+          backgroundColor: const Color(0xFF3daee9),
+          foregroundColor: Colors.white,
           icon: const Icon(Icons.add),
           label: const Text('New Task'),
         ),

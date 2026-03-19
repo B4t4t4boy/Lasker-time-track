@@ -40,9 +40,14 @@ class TimeTrackerApp extends StatelessWidget {
       title: 'Desktop Time Tracker',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blueGrey,
-          brightness: Brightness.light,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF232629),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF3daee9),
+          surface: Color(0xFF31363b),
+          background: Color(0xFF232629),
+          onPrimary: Colors.white,
+          onSurface: Color(0xFFeff0f1),
         ),
         useMaterial3: true,
       ),

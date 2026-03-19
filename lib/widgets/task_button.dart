@@ -11,11 +11,11 @@ class TaskButton extends StatelessWidget {
   Color _getButtonColor() {
     switch (task.state) {
       case TaskState.idle:
-        return Colors.grey.shade400;
+        return const Color(0xFF31363b); // KDE Surface Dark
       case TaskState.active:
-        return Colors.green.shade500;
+        return Colors.green.shade700;
       case TaskState.stopped:
-        return Colors.red.shade400;
+        return Colors.red.shade700;
     }
   }
 
@@ -33,10 +33,17 @@ class TaskButton extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: const Color(0xFF31363b),
+          titleTextStyle: const TextStyle(color: Color(0xFFeff0f1), fontSize: 20, fontWeight: FontWeight.bold),
+          contentTextStyle: const TextStyle(color: Color(0xFFeff0f1)),
           title: const Text('Rename Task'),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(hintText: 'Enter new task name'),
+            style: const TextStyle(color: Color(0xFFeff0f1)),
+            decoration: const InputDecoration(
+              hintText: 'Enter new task name',
+              hintStyle: TextStyle(color: Colors.white30),
+            ),
             autofocus: true,
             onSubmitted: (value) {
               if (value.trim().isNotEmpty) {
@@ -48,7 +55,7 @@ class TaskButton extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: Color(0xFFbdc3c7))),
             ),
             ElevatedButton(
               onPressed: () {
@@ -57,6 +64,7 @@ class TaskButton extends StatelessWidget {
                   Navigator.pop(context);
                 }
               },
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3daee9), foregroundColor: Colors.white),
               child: const Text('Save'),
             ),
           ],
@@ -69,19 +77,20 @@ class TaskButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Task'),
-        content: const Text('Are you sure you want to delete this task? This action cannot be undone.'),
+        backgroundColor: const Color(0xFF31363b),
+        title: const Text('Delete Task', style: TextStyle(color: Color(0xFFeff0f1))),
+        content: const Text('Are you sure you want to delete this task? This action cannot be undone.', style: TextStyle(color: Color(0xFFbdc3c7))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(color: Color(0xFFbdc3c7))),
           ),
           ElevatedButton(
             onPressed: () {
               context.read<TaskProvider>().removeTask(task.id);
               Navigator.pop(context);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700, foregroundColor: Colors.white),
             child: const Text('Delete'),
           ),
         ],
@@ -93,19 +102,20 @@ class TaskButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset Timer'),
-        content: const Text('Are you sure you want to reset the timer to 00:00:00?'),
+        backgroundColor: const Color(0xFF31363b),
+        title: const Text('Reset Timer', style: TextStyle(color: Color(0xFFeff0f1))),
+        content: const Text('Are you sure you want to reset the timer to 00:00:00?', style: TextStyle(color: Color(0xFFbdc3c7))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(color: Color(0xFFbdc3c7))),
           ),
           ElevatedButton(
             onPressed: () {
               context.read<TaskProvider>().resetTaskTimer(task.id);
               Navigator.pop(context);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange.shade800, foregroundColor: Colors.white),
             child: const Text('Reset'),
           ),
         ],
@@ -117,8 +127,6 @@ class TaskButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Prevent tapping the general button from ignoring popup menu hits by managing hit tests inherently via Stack order,
-        // but since PopupMenu is on top, it naturally consumes its own hits.
         context.read<TaskProvider>().toggleTaskState(task.id);
       },
       child: AnimatedContainer(
@@ -128,7 +136,7 @@ class TaskButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2), // Stronger shadow
+              color: Colors.black.withOpacity(0.4),
               blurRadius: 10,
               offset: const Offset(0, 5),
             )
@@ -136,7 +144,6 @@ class TaskButton extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // Main content
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
               child: Column(
@@ -147,7 +154,7 @@ class TaskButton extends StatelessWidget {
                     task.name,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFeff0f1),
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -159,7 +166,7 @@ class TaskButton extends StatelessWidget {
                     _formatDuration(task.trackedSeconds),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFeff0f1),
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                     ),
@@ -167,13 +174,13 @@ class TaskButton extends StatelessWidget {
                 ],
               ),
             ),
-            // Options Menu
             Positioned(
               top: 4,
               right: 4,
               child: PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
+                icon: const Icon(Icons.more_vert, color: Color(0xFFeff0f1)),
                 tooltip: 'Options',
+                color: const Color(0xFF232629), // KDE Menu Dark
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 onSelected: (value) {
                   if (value == 'rename') {
@@ -189,9 +196,9 @@ class TaskButton extends StatelessWidget {
                     value: 'rename',
                     child: Row(
                       children: [
-                        Icon(Icons.edit, size: 20, color: Colors.black87),
+                        Icon(Icons.edit, size: 20, color: Color(0xFFeff0f1)),
                         SizedBox(width: 8),
-                        Text('Rename'),
+                        Text('Rename', style: TextStyle(color: Color(0xFFeff0f1))),
                       ],
                     ),
                   ),
@@ -201,7 +208,7 @@ class TaskButton extends StatelessWidget {
                       children: [
                         Icon(Icons.refresh, size: 20, color: Colors.orange),
                         SizedBox(width: 8),
-                        Text('Reset Timer'),
+                        Text('Reset Timer', style: TextStyle(color: Color(0xFFeff0f1))),
                       ],
                     ),
                   ),
@@ -209,9 +216,9 @@ class TaskButton extends StatelessWidget {
                     value: 'delete',
                     child: Row(
                       children: [
-                        Icon(Icons.delete, size: 20, color: Colors.red),
+                        Icon(Icons.delete, size: 20, color: Colors.redAccent),
                         SizedBox(width: 8),
-                        Text('Delete', style: TextStyle(color: Colors.red)),
+                        Text('Delete', style: TextStyle(color: Colors.redAccent)),
                       ],
                     ),
                   ),
