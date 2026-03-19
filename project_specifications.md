@@ -6,7 +6,7 @@ A lightweight, desktop-first application designed to help users track time spent
 ## 2. Technology Stack
 *   **Framework:** Flutter
 *   **Language:** Dart
-*   **Target Platforms:** Windows 11 (Primary), Debian Linux (Secondary target)
+*   **Target Platforms:** Windows 11 (Primary), Android (Mobile), Debian Linux (Secondary)
 
 ## 3. UI/UX Requirements
 *   **Aesthetic:** Simple, clean, and highly responsive.

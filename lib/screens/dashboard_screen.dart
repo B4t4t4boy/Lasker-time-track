@@ -4,6 +4,8 @@ import '../providers/task_provider.dart';
 import '../widgets/task_button.dart';
 import '../widgets/calendar_view.dart';
 import 'package:window_manager/window_manager.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -50,15 +52,23 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final taskProvider = context.watch<TaskProvider>();
 
+    final bool isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+
     return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(40),
-        child: WindowCaption(
-          title: Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFFeff0f1))),
-          brightness: Brightness.dark,
-          backgroundColor: Color(0xFF232629),
-        ),
-      ),
+      appBar: isDesktop
+          ? const PreferredSize(
+              preferredSize: Size.fromHeight(40),
+              child: WindowCaption(
+                title: Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFFeff0f1))),
+                brightness: Brightness.dark,
+                backgroundColor: Color(0xFF232629),
+              ),
+            )
+          : AppBar(
+              title: const Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFFeff0f1))),
+              backgroundColor: const Color(0xFF232629),
+              elevation: 0,
+            ),
       backgroundColor: const Color(0xFF232629),
       body: Column(
         children: [
