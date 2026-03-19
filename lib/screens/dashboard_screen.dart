@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../widgets/task_button.dart';
+import '../widgets/calendar_view.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -52,33 +53,47 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
       ),
-      body: taskProvider.tasks.isEmpty
-          ? const Center(
-              child: Text(
-                'No tasks yet. Create one to start tracking!',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 250,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.2,
-                ),
-                itemCount: taskProvider.tasks.length,
-                itemBuilder: (context, index) {
-                  return TaskButton(task: taskProvider.tasks[index]);
-                },
-              ),
-            ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddTaskDialog(context),
-        icon: const Icon(Icons.add),
-        label: const Text('New Task'),
+      backgroundColor: Colors.grey.shade100,
+      body: Column(
+        children: [
+          Expanded(
+            child: taskProvider.tasks.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No tasks yet. Create one to start tracking!',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        // Reduced scale by 20%
+                        maxCrossAxisExtent: 200, 
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 1.2,
+                      ),
+                      itemCount: taskProvider.tasks.length,
+                      itemBuilder: (context, index) {
+                        return TaskButton(task: taskProvider.tasks[index]);
+                      },
+                    ),
+                  ),
+          ),
+          const CalendarView(),
+        ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 250.0), // Safely push FAB above calendar
+        child: FloatingActionButton.extended(
+          onPressed: () => _showAddTaskDialog(context),
+          icon: const Icon(Icons.add),
+          label: const Text('New Task'),
+        ),
       ),
     );
   }

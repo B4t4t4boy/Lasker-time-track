@@ -16,12 +16,19 @@ class TaskProvider with ChangeNotifier {
     _startGlobalTimer();
   }
 
+  String _getTodayDateString() {
+    final now = DateTime.now();
+    return "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+  }
+
   void _startGlobalTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       bool hasActive = false;
+      final todayDate = _getTodayDateString();
       for (var task in _tasks) {
         if (task.state == TaskState.active) {
           task.trackedSeconds++;
+          task.dailyLogs[todayDate] = (task.dailyLogs[todayDate] ?? 0) + 1;
           hasActive = true;
         }
       }
@@ -72,6 +79,7 @@ class TaskProvider with ChangeNotifier {
     final taskIndex = _tasks.indexWhere((t) => t.id == id);
     if (taskIndex != -1) {
       _tasks[taskIndex].trackedSeconds = 0;
+      _tasks[taskIndex].dailyLogs.clear();
       _saveTasks();
       notifyListeners();
     }

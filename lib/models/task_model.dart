@@ -7,13 +7,15 @@ class AppTask {
   String name;
   int trackedSeconds;
   TaskState state;
+  Map<String, int> dailyLogs;
 
   AppTask({
     required this.id,
     required this.name,
     this.trackedSeconds = 0,
     this.state = TaskState.idle,
-  });
+    Map<String, int>? dailyLogs,
+  }) : dailyLogs = dailyLogs ?? {};
 
   Map<String, dynamic> toMap() {
     return {
@@ -21,6 +23,7 @@ class AppTask {
       'name': name,
       'trackedSeconds': trackedSeconds,
       'state': state.index,
+      'dailyLogs': dailyLogs,
     };
   }
 
@@ -30,6 +33,9 @@ class AppTask {
       name: map['name'],
       trackedSeconds: map['trackedSeconds'] ?? 0,
       state: TaskState.values[map['state'] ?? 0],
+      dailyLogs: map['dailyLogs'] != null 
+          ? Map<String, int>.from(map['dailyLogs'])
+          : {},
     );
   }
 
