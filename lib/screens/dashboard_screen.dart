@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../widgets/task_button.dart';
 import '../widgets/calendar_view.dart';
+import 'package:window_manager/window_manager.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -50,15 +51,15 @@ class DashboardScreen extends StatelessWidget {
     final taskProvider = context.watch<TaskProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold)),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-      ),
       backgroundColor: Colors.grey.shade100,
       body: Column(
         children: [
+          // Elegant Native Integrated Window Title Bar
+          const WindowCaption(
+            title: Text('Time Tracker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
+          ),
           Expanded(
             child: taskProvider.tasks.isEmpty
                 ? const Center(
