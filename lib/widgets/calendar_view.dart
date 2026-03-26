@@ -107,14 +107,73 @@ class CalendarView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              dateStr == todayDateStr ? "Today" : _formatDate(date),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                height: 1.2,
-                                color: dateStr == todayDateStr ? const Color(0xFF3daee9) : const Color(0xFFeff0f1),
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    dateStr == todayDateStr ? "Today" : _formatDate(date),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      height: 1.2,
+                                      color: dateStr == todayDateStr ? const Color(0xFF3daee9) : const Color(0xFFeff0f1),
+                                    ),
+                                  ),
+                                ),
+                                if (displayLogs.isNotEmpty)
+                                  SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: PopupMenuButton<String>(
+                                      padding: EdgeInsets.zero,
+                                      icon: const Icon(Icons.more_vert, size: 16, color: Color(0xFFbdc3c7)),
+                                      tooltip: 'Options',
+                                      color: const Color(0xFF232629),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      onSelected: (val) {
+                                        if (val == 'clear') {
+                                          showDialog(
+                                            context: context,
+                                            builder: (ctx) => AlertDialog(
+                                              backgroundColor: const Color(0xFF31363b),
+                                              title: const Text('Clear Day', style: TextStyle(color: Color(0xFFeff0f1))),
+                                              content: const Text('Are you sure you want to clear all tracked time for this day?\nThis cannot be undone.', style: TextStyle(color: Color(0xFFbdc3c7))),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.pop(ctx),
+                                                  child: const Text('Cancel', style: TextStyle(color: Color(0xFFbdc3c7))),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    context.read<TaskProvider>().clearDay(dateStr);
+                                                    Navigator.pop(ctx);
+                                                  },
+                                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700, foregroundColor: Colors.white),
+                                                  child: const Text('Clear'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      itemBuilder: (context) => [
+                                        const PopupMenuItem(
+                                          value: 'clear',
+                                          height: 32,
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.delete, size: 16, color: Colors.redAccent),
+                                              SizedBox(width: 8),
+                                              Text('Clear Day', style: TextStyle(color: Colors.redAccent, fontSize: 13)),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
                             ),
                             const Divider(height: 12, color: Color(0xFF31363b)),
                             if (displayLogs.isEmpty)

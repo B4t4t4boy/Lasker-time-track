@@ -116,6 +116,22 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
+  void clearDay(String dateStr) {
+    final todayDate = _getTodayDateString();
+    if (dateStr == todayDate) {
+      for (var task in _tasks) {
+        task.trackedSeconds = 0;
+        task.state = TaskState.idle;
+      }
+      _saveTasks();
+      _takeSnapshot();
+    } else {
+      _snapshots.remove(dateStr);
+      _saveSnapshots();
+    }
+    notifyListeners();
+  }
+
   Future<void> _saveTasks() async {
     final prefs = await SharedPreferences.getInstance();
     final tasksJson = _tasks.map((t) => t.toJson()).toList();
