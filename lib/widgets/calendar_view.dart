@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../models/task_model.dart';
+import '../models/daily_snapshot_model.dart';
 
 class CalendarView extends StatelessWidget {
   const CalendarView({Key? key}) : super(key: key);
@@ -48,22 +49,7 @@ class CalendarView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  '14-Day Calendar Log',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFeff0f1)),
-                ),
-                Text(
-                  'Snapshotting Cumulative Task Timers',
-                  style: TextStyle(fontSize: 13, color: Color(0xFFbdc3c7), fontStyle: FontStyle.italic),
-                )
-              ],
-            ),
-          ),
+          const SizedBox(height: 12),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -83,7 +69,31 @@ class CalendarView extends StatelessWidget {
                       final date = twoWeeks[index];
                       final dateStr = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
                       
-                      final loggedTasks = tasks.where((t) => (t.dailyLogs[dateStr] ?? 0) > 0).toList();
+                      final isToday = dateStr == todayDateStr;
+                      
+                      final List<Map<String, String>> displayLogs = [];
+                      
+                      if (isToday) {
+                        final activeToday = tasks.where((t) => t.trackedSeconds > 0).toList();
+                        for (var task in activeToday) {
+                          displayLogs.add({
+                            'name': task.name,
+                            'duration': _formatDuration(task.trackedSeconds),
+                          });
+                        }
+                      } else {
+                        final snapshot = taskProvider.getSnapshotForDate(dateStr);
+                        if (snapshot != null) {
+                          for (var entry in snapshot.tasks.entries) {
+                            if (entry.value > 0) {
+                              displayLogs.add({
+                                'name': entry.key,
+                                'duration': '${entry.value}m',
+                              });
+                            }
+                          }
+                        }
+                      }
 
                       return Container(
                         padding: const EdgeInsets.all(8),
@@ -107,22 +117,21 @@ class CalendarView extends StatelessWidget {
                               ),
                             ),
                             const Divider(height: 12, color: Color(0xFF31363b)),
-                            if (loggedTasks.isEmpty)
+                            if (displayLogs.isEmpty)
                               const Expanded(
                                 child: Center(
                                   child: Text(
                                     "-", 
                                     style: TextStyle(color: Color(0xFFbdc3c7), fontSize: 12)
                                   )
-                                ),
+                                )
                               )
                             else
                               Expanded(
                                 child: ListView.builder(
-                                  itemCount: loggedTasks.length,
+                                  itemCount: displayLogs.length,
                                   itemBuilder: (context, i) {
-                                    final task = loggedTasks[i];
-                                    final seconds = task.dailyLogs[dateStr]!;
+                                    final log = displayLogs[i];
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 2.0),
                                       child: Row(
@@ -130,14 +139,14 @@ class CalendarView extends StatelessWidget {
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              task.name,
+                                              log['name']!,
                                               style: const TextStyle(fontSize: 11, color: Color(0xFFeff0f1)),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            _formatDuration(seconds),
+                                            log['duration']!,
                                             style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade400),
                                           ),
                                         ],
