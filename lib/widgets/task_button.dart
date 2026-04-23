@@ -20,11 +20,19 @@ class TaskButton extends StatelessWidget {
   }
 
   String _formatDuration(int totalSeconds) {
+    if (totalSeconds == 0) return "0s";
     final duration = Duration(seconds: totalSeconds);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+    
+    if (hours > 0) {
+      return "${hours}h${minutes.toString().padLeft(2, '0')}min${seconds.toString().padLeft(2, '0')}s";
+    } else if (minutes > 0) {
+      return "${minutes}min${seconds.toString().padLeft(2, '0')}s";
+    } else {
+      return "${seconds}s";
+    }
   }
 
   void _showRenameDialog(BuildContext context) {

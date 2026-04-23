@@ -2,20 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../models/task_model.dart';
-import '../models/daily_snapshot_model.dart';
 
 class CalendarView extends StatelessWidget {
   const CalendarView({Key? key}) : super(key: key);
 
-  String _formatDuration(int totalSeconds) {
+  String _formatCurrentDuration(int totalSeconds) {
     if (totalSeconds == 0) return "0s";
     final duration = Duration(seconds: totalSeconds);
-    if (duration.inHours > 0) {
-      return "${duration.inHours}h ${duration.inMinutes.remainder(60)}m";
-    } else if (duration.inMinutes > 0) {
-      return "${duration.inMinutes}m ${duration.inSeconds.remainder(60)}s";
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+    
+    if (hours > 0) {
+      return "${hours}h${minutes.toString().padLeft(2, '0')}min${seconds.toString().padLeft(2, '0')}s";
+    } else if (minutes > 0) {
+      return "${minutes}min${seconds.toString().padLeft(2, '0')}s";
     } else {
-      return "${duration.inSeconds}s";
+      return "${seconds}s";
+    }
+  }
+
+  String _formatPastDuration(int totalMinutes) {
+    if (totalMinutes == 0) return "0min";
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes % 60;
+    if (hours > 0) {
+      return "${hours}h${minutes.toString().padLeft(2, '0')}min";
+    } else {
+      return "${minutes}min";
     }
   }
 
@@ -78,7 +92,7 @@ class CalendarView extends StatelessWidget {
                         for (var task in activeToday) {
                           displayLogs.add({
                             'name': task.name,
-                            'duration': _formatDuration(task.trackedSeconds),
+                            'duration': _formatCurrentDuration(task.trackedSeconds),
                           });
                         }
                       } else {
@@ -88,7 +102,7 @@ class CalendarView extends StatelessWidget {
                             if (entry.value > 0) {
                               displayLogs.add({
                                 'name': entry.key,
-                                'duration': '${entry.value}m',
+                                'duration': _formatPastDuration(entry.value),
                               });
                             }
                           }
