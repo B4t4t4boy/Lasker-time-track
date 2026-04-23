@@ -83,12 +83,11 @@ class DashboardScreen extends StatelessWidget {
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                        // Reduced scale by 20%
-                        maxCrossAxisExtent: 200, 
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: isDesktop ? 200 : MediaQuery.of(context).size.width, 
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 1.2,
+                        childAspectRatio: isDesktop ? 1.2 : (MediaQuery.of(context).size.width / 120),
                       ),
                       itemCount: taskProvider.tasks.length,
                       itemBuilder: (context, index) {

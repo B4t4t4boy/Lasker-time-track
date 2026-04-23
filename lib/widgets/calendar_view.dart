@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../models/task_model.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class CalendarView extends StatelessWidget {
   const CalendarView({Key? key}) : super(key: key);
@@ -50,6 +52,8 @@ class CalendarView extends StatelessWidget {
     // Generate 14 days chronologically (Oldest first, today last)
     final List<DateTime> twoWeeks = List.generate(14, (i) => now.subtract(Duration(days: 13 - i)));
 
+    final bool isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+
     return Container(
       height: 380, // Expanded height strictly structured for 2 perfect geometric lines
       width: double.infinity,
@@ -70,13 +74,14 @@ class CalendarView extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
+                    physics: isDesktop ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7, // Locks it down horizontally to precisely 7 days
+                      crossAxisCount: isDesktop ? 7 : 2, 
                       crossAxisSpacing: 8,
                       mainAxisSpacing: 8,
-                      // Dynamically resolves strict geometric proportions mapping layout height perfectly fitting exactly 2 rows
-                      childAspectRatio: (constraints.maxWidth / 7) / ((constraints.maxHeight - 8) / 2),
+                      childAspectRatio: isDesktop 
+                          ? ((constraints.maxWidth / 7) / ((constraints.maxHeight - 8) / 2))
+                          : ((constraints.maxWidth / 2) / 120),
                     ),
                     itemCount: 14,
                     itemBuilder: (context, index) {
